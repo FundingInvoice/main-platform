@@ -1,0 +1,220 @@
+<?php
+
+/**
+
+ * Implements hook_block_info().
+
+ */
+
+function calculator_popup_block_info() {
+
+  $blocks = array();
+
+  $blocks['calculator_popup'] = array(
+
+  'info' => t('Calculator Popup'),
+
+  );
+
+return $blocks;
+
+}
+
+
+
+/**
+
+ * Implements hook_block_view().
+
+ */
+
+ 
+
+function calculator_popup_block_view($delta = '') {
+
+  $block = array();
+
+  switch ($delta) {
+
+    case 'calculator_popup':
+
+      $block['subject'] = t('Invoice Calculator');
+
+      $block['content'] = drupal_get_form('calculator_popup_form');
+
+      break;
+
+  }
+
+  return $block;
+
+}
+
+
+
+function calculator_popup_form($form, &$form_state) {
+
+  $form['#attached']['js'] = array(
+
+    drupal_get_path('module', 'calculator_popup') . '/js/calculator_popup.js',
+
+  );
+
+  $form['description'] = array(
+
+    '#type' => 'item',
+
+    '#title' => t(''),
+
+  );
+
+  $form['inpayval'] = array(
+
+    '#type' => 'hidden',
+
+    '#title' => t('Value you have to pay'),
+
+    '#prefix' => '<div id="in_calc_out"><div id="payout">',
+
+    '#suffix' => '</div>',
+
+  );
+
+  $form['feeval'] = array(
+
+    '#type' => 'hidden',
+
+    '#title' => t('Pay out value'),
+
+    '#prefix' => '<span class="dotted_red"></span><div id="charge">',
+
+    '#suffix' => '</div></div>',
+
+  );
+
+  $form['turnover'] = array(
+
+    '#type' => 'select',
+
+    '#title' => t('Company Turnover'),
+
+    '#options' => array(
+
+      250 => '150k-250k',
+
+      500 => '251k-500k',
+
+      1000 => '501k-1m',
+
+      2000 => '1m-2.5m',
+
+      5000 => '2.5-5mn',
+
+      6000 => '5mn+',
+
+    ),  
+
+  );
+
+  $form['invalue'] = array(
+
+    '#title' => 'What is the value of your invoice?',
+
+    '#type' => 'slider',
+
+    '#default_value' => 50000,
+
+    '#orientation' => 'horizontal',
+
+    '#slider_style' => 'blue',
+
+    '#range' => TRUE,
+
+    '#min' => 0,
+
+    '#max' => 1000000,
+
+    '#step' => 1000,
+
+    '#disabled' => FALSE,
+
+    '#display_inputs' => TRUE,
+
+    '#display_values' => TRUE,
+
+    '#display_values_format' => '%{value}%',
+
+    '#slider_length' => NULL,
+
+    '#validate_range' => TRUE,
+
+  );
+
+  $form['duedays'] = array(
+
+    '#title' => 'When it will be paid?(in days)',
+
+    '#type' => 'slider',
+
+    '#default_value' => 30,
+
+    '#orientation' => 'horizontal',
+
+    '#slider_style' => 'blue',
+
+    '#range' => TRUE,
+
+    '#min' => 0,
+
+    '#max' => 180,
+
+    '#step' => 1,
+
+    '#disabled' => FALSE,
+
+    '#display_inputs' => TRUE,
+
+    '#display_values' => TRUE,
+
+    '#display_values_format' => '%{value}%',
+
+    '#slider_length' => NULL,
+
+    '#validate_range' => TRUE,
+
+  );
+
+  $form['submit'] = array(
+
+    '#type' => 'submit',
+
+    //#value is the text to display inside the button
+
+    '#value' => t('Apply to Sell Your Invoice Now'),
+
+    '#submit' => array('calculator_popup_form_submit'),
+
+  );
+
+  return $form;
+
+}
+
+
+
+function calculator_popup_form_submit($form, &$form_state) {
+
+  global $user;
+
+    if ($user->uid) {
+
+      $form_state['redirect'] = array('node/add/invoice', array('query' => array('val'=> $form_state['values']['invalue'])));
+
+    } else {
+       $ival = $form_state['values']['invalue'];
+
+        $form_state['redirect'] = array('seller', array('query' => array('destination' => 'node/add/invoice/'.$ival['value'])));
+
+      }
+
+}

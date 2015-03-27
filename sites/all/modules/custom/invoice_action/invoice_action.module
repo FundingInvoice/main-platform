@@ -1,0 +1,319 @@
+<?php
+/**
+ * Implements hook_block_info().
+ */
+
+function invoice_action_block_info() {
+
+$blocks = array();
+
+$blocks['invoice_block'] = array(
+
+  'info' => t('My Invoice Block'),
+
+);
+
+return $blocks;
+
+}
+
+
+
+/**
+
+ * Implements hook_block_view().
+
+ */
+
+
+
+function invoice_action_block_view($delta = '') {
+
+  $block = array();
+
+    switch ($delta) {
+
+      case 'invoice_block':
+
+        $block['subject'] = t('Invoice Calculator');
+
+        $block['content'] = drupal_get_form('invoice_action_form');
+
+        break;
+
+    }
+
+  return $block;
+
+}
+
+
+
+function invoice_action_form($form, &$form_state) {
+
+  $form['#attached']['js'] = array(
+
+    drupal_get_path('module', 'invoice_action') . '/js/invoice_action.js',
+
+  );
+
+  $form['description'] = array(
+
+    '#type' => 'item',
+
+    '#title' => t(''),
+
+    '#markup' => '<div class="calicon1"><i class="fa fa-calculator"></i>Calculate Approximate Advance & Fees Payable</div>',
+
+    /*'#markup' => '<div class="hpayment">Sure you do. <br/>Use your calculator...<br/>and ...</div><div class="calicon"><i class="fa fa-calculator"></i> Calculate Maximum Invoice Value</div>',*/
+
+  );
+
+  $form['f3'] = array(
+
+    '#type' => 'hidden',
+
+    '#title' => t('Value you have to pay'),
+
+    '#prefix' => '<div id="in_calc_out"><div id="invalue">',
+
+    '#suffix' => '</div>',
+
+  );
+
+  $form['f4'] = array(
+
+    '#type' => 'hidden',
+
+    '#title' => t('Pay out value'),
+
+    '#prefix' => '<span class="dotted_red"></span><div id="payoutval">',
+
+    '#suffix' => '</div></div>',
+
+  );
+
+  $form['f1'] = array(
+
+    '#type' => 'select',
+
+    '#title' => t('Company Turnover'),
+
+    '#options' => array(
+
+     250 => '150k-250k',
+
+     500 => '251k-500k',
+
+     1000 => '501k-1m',
+
+     2000 => '1m-2.5m',
+
+     5000 => '2.5-5mn',
+
+     6000 => '5mn+',
+
+  ),  
+
+);
+
+
+
+/*  
+
+  $form['f2'] = array(
+
+    '#type' => 'textfield',
+
+    '#title' => t('Invoice Value '),
+
+    '#size' => 25,
+
+    '#required' => TRUE,
+
+  );
+
+*/
+
+  $form['f2'] = array(
+
+    '#type' => 'slider',
+
+    '#default_value' => 50000,
+
+    '#orientation' => 'horizontal',
+
+    '#slider_style' => 'blue',
+
+    '#range' => TRUE,
+
+    '#min' => 0,
+
+    '#max' => 1000000,
+
+	'#step' => 1000,
+
+    '#disabled' => FALSE,
+
+    '#slider_length' => NULL,
+
+    '#validate_range' => TRUE,
+
+    '#title' => 'What is the value of your invoice?',
+
+    '#display_inputs' => TRUE,
+
+    '#display_values' => TRUE,
+     //'#disabled' => TRUE,
+
+    '#display_values_format' => '%{value}%',
+
+	//'#prefix' => '',
+
+    
+
+  );
+
+
+
+  $form['slider2'] = array(
+
+    '#title' => 'When it will be paid?(in days)',
+
+    '#type' => 'slider',
+
+    '#orientation' => 'horizontal',
+
+    '#slider_style' => 'blue',
+
+    '#default_value' => 30,
+
+    '#range' => TRUE,
+
+    '#min' => 0,
+
+    '#max' => 180,
+
+    '#step' => 1,
+
+    '#disabled' => FALSE,
+
+    '#display_inputs' => TRUE,
+
+    '#display_values' => TRUE,
+
+    '#display_values_format' => '%{value}%',
+
+    '#slider_length' => NULL,
+
+    '#validate_range' => TRUE,
+
+	
+
+  );
+
+
+
+/*
+
+  $form['single11'] = array(
+
+    '#type' => 'slider',
+
+    '#title' => 'Simple Slider',
+
+    '#title2' => NULL,
+
+    '#input_title' => t('Min'),
+
+    '#input2_title' => t('Max'),
+
+    '#animate' => 'fast',
+
+    'adjust_field_min' => NULL,
+
+    'adjust_field_max' => NULL,
+
+    '#disabled' => FALSE,
+
+    '#max' => 100,
+
+    '#min' => 0,
+
+    '#orientation' => 'horizontal',
+
+    '#range' => FALSE,
+
+    '#step' => 1,
+
+    '#default_value' => 40,
+
+    '#slider_style' => NULL,
+
+    '#size' => 3,
+
+    '#display_inputs' => TRUE,
+
+    '#display_values' => FALSE,
+
+    '#display_values_format' => '%{value}%',
+
+    '#slider_length' => NULL,
+
+    '#display_inside_fieldset' => FALSE,
+
+    '#group' => NULL,
+
+    '#group_type' => 'same',
+
+    '#group_master' => FALSE,
+
+    '#validate_range' => TRUE,
+
+    '#fields_to_sync_css_selector' => NULL,
+
+    '#display_ignore_button' => FALSE,
+
+    '#hide_slider_handle_when_no_value' => FALSE,
+
+  ); 
+
+*/
+
+
+
+  $form['submit'] = array(
+
+    '#type' => 'submit',
+    //#value is the text to display inside the button
+
+    '#value' => t('Apply to Sell Your Invoice Now'),
+
+    '#submit' => array('invoice_action_form_submit'),
+
+  );
+
+  return $form;
+
+}
+
+
+
+function invoice_action_form_submit($form, &$form_state) {
+
+  global $user;
+
+    if ($user->uid) {
+
+      $form_state['redirect'] = array('node/add/invoice', array('query' => array('val'=> $form_state['values']['f2'])));
+
+    } else 
+
+    {
+       $ival = $form_state['values']['f2'];
+           $form_state['redirect'] = array('seller', array('query' => array('destination' => 'node/add/invoice/'.$ival['value'])));
+       //$form_state['redirect'] = array('seller', array('query' => array('destination' =>'node/add/invoice',array('query'=>array('val'=> $ival['val'])))));
+
+         }
+
+}

@@ -1,0 +1,24 @@
+var $ = jQuery.noConflict();
+$(function() {
+    $("#edit-f2").blur(function(){
+    var myval = $(this).val();
+    var percent;
+    if (myval <= 500) {
+          percent  = (myval*15)/100;
+      } else if(myval <= 1000) {
+          percent  = (myval*10)/100;
+      } else {
+          percent  = (myval*5)/100;
+      }
+    var total = myval - percent;
+    $('#invalue').html('Total value you have to pay : ' + total);
+  });
+  
+  
+  $("#edit-f2").focus(function(){
+      $('#invalue').html('Total value you have to pay : _____');
+  }); 
+    
+});
+
+

@@ -1,0 +1,135 @@
+<?php
+function formalter_form_alter(&$form, &$form_states, $form_id) {
+    //print_r($form_id);
+    //if ($form_id == 'views_exposed_form') {
+    if ($form['#id'] == 'views-exposed-form-invoice-search-page-1') {
+        $form['field_invoice_price_value']['min']['#title'] = "";
+        $form['field_invoice_price_value']['max']['#title'] = "";
+ //$form['field_invoice_price_value']['max']['#title']['#attributes'] = array('placeholder' => array(t('Gemeente...')));
+    }
+    if ($form['#id'] == 'views-exposed-form-invoice-search-page-2') {
+        $form['field_invoice_price_value']['max']['#title'] = '';
+    }
+
+    if ($form_id == 'invoice_node_form' && !isset($form['nid']['#value']) && isset($_GET['val'])) {
+     $path = drupal_get_path('module', 'formalter');
+     drupal_add_js("$path/js/formalter.js");
+     $val = $_GET['val'];
+     $form['field_invoice_price']['und'][0]['value']['#default_value'] = $val;
+    }
+    if ($form_id == 'invoice_node_form' && !isset($form['nid']['#value']) && (arg(2) == 'invoice') && is_numeric(arg(3))) {
+          $form['field_invoice_price']['und'][0]['value']['#default_value'] = arg(3);
+    }
+    if ($form_id == 'user_register_form' || $form_id == 'user_profile_form') {
+      $path = drupal_get_path('module', 'formalter');
+      drupal_add_js("$path/js/formalter_reg.js"); 
+    }
+    if ($form_id == 'invoice_node_form') {
+    $path = drupal_get_path('module', 'formalter');
+      drupal_add_js("$path/js/formalter.js"); 
+
+    }
+  /// Bid form validate for duplicate//
+    if ($form_id == 'bid_node_form') {
+        global $user;
+        $ccuid = $user->uid;
+        //print "<pre>";
+       // print_r($form_states);
+       // print "</pre>";
+        //$form['#validate'][] = 'duplicate_node_validate';
+        $nnid = arg(1);
+       // print $nnid;
+      $resutl =db_query('select fid.field_bidded_invoice_id_value from field_data_field_bidded_invoice_id fid, node n where fid.field_bidded_invoice_id_value = :refnid and n.uid=:cuid and n.nid = fid.entity_id', array(':refnid' => $nnid, ':cuid' => $ccuid));
+        //$resutl =db_query('select field_bidded_invoice_id_value from field_data_field_bidded_invoice_id where field_bidded_invoice_id_value = :refnid', array(':refnid' => $nnid)); 
+        $exitval = $resutl->rowCount();
+        //print $exitval;
+        if ($exitval > 0) {
+         $path = drupal_get_path('module', 'formalter');
+         drupal_add_js("$path/js/alert.js");   
+        } 
+    }
+
+
+	if ($form_id == 'invoice_node_form') {
+      print "<pre>";
+      //print_r($form_states['storage']['step']);
+      print "</pre>";
+    }
+	
+	
+   }
+
+
+
+function formalter_form_user_profile_form_alter(&$form, &$form_state) {
+  unset ($form['contact']);
+}
+function formalter_menu() {
+  $items['invoicetest'] = array(         
+    'page callback' => 'invoicetest',     
+    'access callback' => TRUE,     
+    'type' => MENU_CALLBACK,   
+);  
+  return $items; 
+} 
+
+
+
+
+function invoicetest() {
+      $invoiceid = $_REQUEST['invoiceid'];
+	  
+	  $invoice_id = $_REQUEST['invoice_id'];
+	  $invoice_value = $_REQUEST['invoice_value'];
+	  $invoice_debtor = $_REQUEST['invoice_debtor'];
+	  $invoice_due_date = $_REQUEST['invoice_due_date'];
+	  
+	  $uname = $_REQUEST['uname'];
+	  $email=$_REQUEST['email'];
+      $headers = 'From: ';
+      $headers .= $_REQUEST['headers'];
+	  $subject = "Auction winner";
+	  $message = "Hi ".$uname.",\n";
+	  $message .= "You’ve won an auction! The details of the invoice which you have purchased are as follows:-\n";
+	  $message .= "Winning Bid = ".$invoice_id."\n"."Invoice Price = ".$invoice_value."\n"."Invoice Due Date = ".$invoice_due_date."\n"."Debtor = ".$invoice_debtor."\n";
+	  $message .= "Please log in to see further details.\n\n";
+	  $message .= "Warm regards,\n";
+	  $message .= "The Funding Invoice Team";
+	  
+	 
+	 $update_query1 = db_update('field_data_field_bidding_status')
+      ->fields(array(
+        'field_bidding_status_value' => 1,
+       ))
+     ->condition('entity_id', $invoiceid)
+     ->execute();
+
+	 $bidid = $_REQUEST['bidid']; 
+     $update_query2 = db_update('field_data_field_bid_allocated')
+      ->fields(array(
+        'field_bid_allocated_value' => 1,
+       ))
+     ->condition('entity_id', $bidid)
+     ->execute();	 
+
+     mail($email, $subject, $message, $headers);
+}
+
+/*function formalter_menu_alter(&$items) {
+  if (isset($items['blog'])) {
+        $items['blog']['title'] = 'Why should you use Funding Invoice?';
+  }
+}*/
+//function duplicate_node_validate($form, &$form_state) {
+ // $nnid = arg(1);
+ // print $nnid;
+//$resutl =db_query('select field_bidded_invoice_id_value from field_data_field_bidded_invoice_id where field_bidded_invoice_id_value = :refnid', array(':refnid' => $nnid)); 
+//$exitval = $resutl->rowCount();
+//if ($exitval == 1) {
+//return drupal_set_message(t('You already bided on this invoice'),'error');
+//}
+//}
+
+/*function duplicate_node_validate(&$form, &$form_state) {
+     die('this worked');
+}*/

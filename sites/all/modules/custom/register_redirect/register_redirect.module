@@ -1,0 +1,33 @@
+<?php
+
+  function register_redirect_menu() {
+
+    $items['user/invoiceregister'] = array(
+
+	 'title' => 'I want to register as',
+
+	 'page callback' => 'reg_link',
+
+	 'access callback' => 'user_is_anonymous',
+
+	 'type' => MENU_CALLBACK
+
+	 );
+
+	 return $items;
+
+	 }
+
+	 
+
+	 function reg_link() {
+        $custlink = '<div id="reg-page"><div class="regasa">Register as a</div> ';
+        $custlink .= '<div class="sellerreg"><i class="fa fa-sign-in"></i>';   
+	 $custlink .= l('Seller', 'seller/register');
+        $custlink .= '</div>';
+        $custlink .= '<div class="investorreg"><i class="fa fa-sign-in"></i>';
+        $custlink .= l('Investor', 'investor/register');
+        $custlink .= '</div></div>';
+        return $custlink;
+
+	 }

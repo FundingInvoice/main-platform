@@ -1,0 +1,5 @@
+name = Formalter
+description = Form alter for the existing form.
+core = 7.x
+version = "7.x.1"
+package = Custom Module

@@ -1,0 +1,9 @@
+name = Calculator Popup
+description = "Create popup calculator" 
+package = Custom Module 
+
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "calculator_popup"
+
+scripts[] = js/calculator_popup.js

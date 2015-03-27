@@ -1,0 +1,9 @@
+name = Calculator Flip
+description = "Create flip calculator" 
+package = Custom Module 
+
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "calculator_flip"
+
+scripts[] = js/calculator_flip.js

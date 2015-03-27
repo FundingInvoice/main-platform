@@ -1,0 +1,46 @@
+.sliderfield .sliderfield-event-field-container .form-item-invalue-value.form-item:after, .sliderfield .sliderfield-event-field-container .form-item-f2-value:after{
+top:8px !important;	
+}
+.sliderfield .sliderfield-event-field-container .form-item-invalue-value.form-item:after, .sliderfield .sliderfield-event-field-container .form-item-f2-value:after{
+content: "£";
+display: block;
+font-size: 28px;
+position: absolute;
+top:8px !important;	
+color: #d35400;
+left: 9px;
+}
+.ft-13 {
+	font-size: 13px;
+}
+.ft-18 {
+	font-size: 18px;
+}
+.ft-24 {
+	font-size: 24px;
+}
+.ft-26 {
+	font-size: 26px;
+}
+.ft-22 {
+	font-size: 2px;
+}
+.ft-28 {
+	font-size: 28px;
+}
+.ft-32 {
+	font-size: 32px;
+}
+.ft-40 {
+font-size: 40px;
+}
+.ft-65 {
+	font-size: 65px;
+}
+.ft-45 {
+	font-size: 45px;
+}
+.case_study_listing div.counting span{
+font-size:50px !important;
+	
+}

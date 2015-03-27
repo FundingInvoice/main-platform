@@ -1,0 +1,1 @@
+alert("You already bidded on this invoice.");
